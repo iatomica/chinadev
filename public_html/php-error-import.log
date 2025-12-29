@@ -1,0 +1,118 @@
+[27-Aug-2025 23:52:15 UTC] includes/load.php loaded successfully
+[27-Aug-2025 23:52:25 UTC] includes/load.php loaded successfully
+[27-Aug-2025 23:52:25 UTC] bulk_import: process_import triggered
+[27-Aug-2025 23:52:25 UTC] bulk_import: _FILES[excel_file] => Array
+(
+    [name] => product_import_template (1).xls
+    [type] => application/vnd.ms-excel
+    [tmp_name] => /tmp/php1DaQEZ
+    [error] => 0
+    [size] => 89600
+)
+
+[27-Aug-2025 23:52:25 UTC] bulk_import: is_uploaded_file=yes
+[27-Aug-2025 23:52:25 UTC] bulk_import: upload error code=0
+[27-Aug-2025 23:52:25 UTC] bulk_import: tmp=/tmp/php1DaQEZ name=product_import_template (1).xls size=89600 mime=application/vnd.ms-excel
+[27-Aug-2025 23:52:26 UTC] bulk_import: Excel loaded, active sheet: Product Import Template
+[27-Aug-2025 23:52:26 UTC] bulk_import: data rows after header/note removal = 2
+[27-Aug-2025 23:52:26 UTC] Headers found: Product Name (English)*, Product Name (Spanish), Product Name (Chinese), Product Name (Portuguese), Category ID*, Subcategory ID, Buy Price, Sale Price, Currency ID*, Unit ID*, Packaging ID*, Min Stock, Quantity, Customer ID*, Customer Alias*, Price Type ID, Color, Material, Size, CBM (Volume), Inner Packing, EAN13 Barcode, DUN14 Barcode, Weight (kg), Open/Close (1=Yes, 0=No), CTN Net Weight (kg), CTN Gross Weight (kg), Volume (m3)
+[27-Aug-2025 23:52:26 UTC] bulk_import: row 3 FK errors: Customer ID 1 does not exist
+[27-Aug-2025 23:52:26 UTC] FATAL shutdown: Array
+(
+    [type] => 1
+    [message] => Uncaught Error: Call to undefined method MySqli_DB::begin() in /home/u460083963/domains/yiwu-anhao.net/public_html/bulk_import_products.php:414
+Stack trace:
+#0 {main}
+  thrown
+    [file] => /home/u460083963/domains/yiwu-anhao.net/public_html/bulk_import_products.php
+    [line] => 414
+)
+
+[27-Aug-2025 23:56:47 UTC] includes/load.php loaded successfully
+[27-Aug-2025 23:57:01 UTC] includes/load.php loaded successfully
+[27-Aug-2025 23:57:01 UTC] bulk_import: process_import triggered
+[27-Aug-2025 23:57:01 UTC] bulk_import: _FILES[excel_file] => Array
+(
+    [name] => product_import_template (1).xls
+    [type] => application/vnd.ms-excel
+    [tmp_name] => /tmp/phpzUTiRU
+    [error] => 0
+    [size] => 89600
+)
+
+[27-Aug-2025 23:57:01 UTC] bulk_import: is_uploaded_file=yes
+[27-Aug-2025 23:57:01 UTC] bulk_import: upload error code=0
+[27-Aug-2025 23:57:01 UTC] bulk_import: tmp=/tmp/phpzUTiRU name=product_import_template (1).xls size=89600 mime=application/vnd.ms-excel
+[27-Aug-2025 23:57:01 UTC] bulk_import: Excel loaded, active sheet: Product Import Template
+[27-Aug-2025 23:57:01 UTC] bulk_import: data rows after header/note removal = 2
+[27-Aug-2025 23:57:01 UTC] Headers found: Product Name (English)*, Product Name (Spanish), Product Name (Chinese), Product Name (Portuguese), Category ID*, Subcategory ID, Buy Price, Sale Price, Currency ID*, Unit ID*, Packaging ID*, Min Stock, Quantity, Customer ID*, Customer Alias*, Price Type ID, Color, Material, Size, CBM (Volume), Inner Packing, EAN13 Barcode, DUN14 Barcode, Weight (kg), Open/Close (1=Yes, 0=No), CTN Net Weight (kg), CTN Gross Weight (kg), Volume (m3)
+[27-Aug-2025 23:57:01 UTC] bulk_import: row 3 FK errors: Customer ID 1 does not exist
+[27-Aug-2025 23:57:01 UTC] FATAL shutdown: Array
+(
+    [type] => 1
+    [message] => Uncaught Error: Call to undefined method MySqli_DB::prepare() in /home/u460083963/domains/yiwu-anhao.net/public_html/bulk_import_products.php:761
+Stack trace:
+#0 /home/u460083963/domains/yiwu-anhao.net/public_html/bulk_import_products.php(415): insertProduct(Array)
+#1 {main}
+  thrown
+    [file] => /home/u460083963/domains/yiwu-anhao.net/public_html/bulk_import_products.php
+    [line] => 761
+)
+
+[28-Aug-2025 00:00:29 UTC] includes/load.php loaded successfully
+[28-Aug-2025 00:01:29 UTC] includes/load.php loaded successfully
+[28-Aug-2025 00:01:29 UTC] bulk_import: process_import triggered
+[28-Aug-2025 00:01:29 UTC] bulk_import: _FILES[excel_file] => Array
+(
+    [name] => product_import_template (1).xls
+    [type] => application/vnd.ms-excel
+    [tmp_name] => /tmp/phpgw94Kl
+    [error] => 0
+    [size] => 89600
+)
+
+[28-Aug-2025 00:01:29 UTC] bulk_import: is_uploaded_file=yes
+[28-Aug-2025 00:01:29 UTC] bulk_import: upload error code=0
+[28-Aug-2025 00:01:29 UTC] bulk_import: tmp=/tmp/phpgw94Kl name=product_import_template (1).xls size=89600 mime=application/vnd.ms-excel
+[28-Aug-2025 00:01:29 UTC] bulk_import: Excel loaded, active sheet: Product Import Template
+[28-Aug-2025 00:01:29 UTC] bulk_import: data rows after header/note removal = 2
+[28-Aug-2025 00:01:29 UTC] Headers found: Product Name (English)*, Product Name (Spanish), Product Name (Chinese), Product Name (Portuguese), Category ID*, Subcategory ID, Buy Price, Sale Price, Currency ID*, Unit ID*, Packaging ID*, Min Stock, Quantity, Customer ID*, Customer Alias*, Price Type ID, Color, Material, Size, CBM (Volume), Inner Packing, EAN13 Barcode, DUN14 Barcode, Weight (kg), Open/Close (1=Yes, 0=No), CTN Net Weight (kg), CTN Gross Weight (kg), Volume (m3)
+[28-Aug-2025 00:01:29 UTC] bulk_import: row 3 FK errors: Customer ID 1 does not exist
+[28-Aug-2025 00:01:29 UTC] FATAL shutdown: Array
+(
+    [type] => 1
+    [message] => Uncaught Error: Call to undefined method MySqli_DB::prepare() in /home/u460083963/domains/yiwu-anhao.net/public_html/bulk_import_products.php:761
+Stack trace:
+#0 /home/u460083963/domains/yiwu-anhao.net/public_html/bulk_import_products.php(415): insertProduct(Array)
+#1 {main}
+  thrown
+    [file] => /home/u460083963/domains/yiwu-anhao.net/public_html/bulk_import_products.php
+    [line] => 761
+)
+
+[28-Aug-2025 00:03:16 UTC] includes/load.php loaded successfully
+[28-Aug-2025 00:03:34 UTC] includes/load.php loaded successfully
+[28-Aug-2025 00:03:34 UTC] bulk_import: process_import triggered
+[28-Aug-2025 00:03:34 UTC] bulk_import: _FILES[excel_file] => Array
+(
+    [name] => product_import_template (1).xls
+    [type] => application/vnd.ms-excel
+    [tmp_name] => /tmp/phptbMQqB
+    [error] => 0
+    [size] => 89600
+)
+
+[28-Aug-2025 00:03:34 UTC] bulk_import: is_uploaded_file=yes
+[28-Aug-2025 00:03:34 UTC] bulk_import: upload error code=0
+[28-Aug-2025 00:03:34 UTC] bulk_import: tmp=/tmp/phptbMQqB name=product_import_template (1).xls size=89600 mime=application/vnd.ms-excel
+[28-Aug-2025 00:03:34 UTC] bulk_import: Excel loaded, active sheet: Product Import Template
+[28-Aug-2025 00:03:34 UTC] bulk_import: data rows after header/note removal = 2
+[28-Aug-2025 00:03:34 UTC] Headers found: Product Name (English)*, Product Name (Spanish), Product Name (Chinese), Product Name (Portuguese), Category ID*, Subcategory ID, Buy Price, Sale Price, Currency ID*, Unit ID*, Packaging ID*, Min Stock, Quantity, Customer ID*, Customer Alias*, Price Type ID, Color, Material, Size, CBM (Volume), Inner Packing, EAN13 Barcode, DUN14 Barcode, Weight (kg), Open/Close (1=Yes, 0=No), CTN Net Weight (kg), CTN Gross Weight (kg), Volume (m3)
+[28-Aug-2025 00:03:34 UTC] bulk_import: row 3 FK errors: Customer ID 1 does not exist
+[28-Aug-2025 00:03:34 UTC] bulk_import: product inserted id=5759 on row 4
+[28-Aug-2025 00:03:48 UTC] includes/load.php loaded successfully
+[28-Aug-2025 04:10:56 UTC] includes/load.php loaded successfully
+[28-Aug-2025 04:11:56 UTC] includes/load.php loaded successfully
+[02-Sep-2025 07:37:15 UTC] includes/load.php loaded successfully
+[03-Sep-2025 12:47:29 UTC] includes/load.php loaded successfully
+[03-Sep-2025 12:47:31 UTC] includes/load.php loaded successfully

@@ -1,0 +1,11 @@
+version: "3.8"
+
+services:
+  web:
+    build: .
+    container_name: chinadev-php74
+    ports:
+      - "8000:80"
+    volumes:
+      - ./public_html:/var/www/html
+    restart: unless-stopped

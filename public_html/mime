@@ -1,0 +1,59 @@
+<?php
+  require_once('includes/load.php');
+  if (!$session->isUserLoggedIn(true)) { redirect('index.php', false);}
+?>
+
+<?php
+ $html = '';
+ $categorie = $_POST['dato'];
+ //$cati = 1;
+ $all_subcategories = find_subcat('subcategories',$categorie);
+
+//$html.="<div class=\"col-md-6\">";
+$html.="<div class=\"form-group\">";
+$html.="<label for=\"qty\">Subcategorie</label>";
+$html.="<select class=\"form-control\" id=\"product-subcategorie\" name=\"product-subcategorie\" >";	
+
+	foreach ($all_subcategories as $subcat){
+    $html.= "<option value=".(int)$subcat['id'].">".$subcat['name']."</option>"; 	
+    }
+
+
+    $html.="</select> </div>";
+    echo json_encode($html);
+    
+
+
+
+	/*$html .="<div class='col-md-6'>";
+ 	$html .="<div class='form-group'>";
+    $html .= "<label for='qty'>Sub-Categorie</label>";
+    $html .="<select id=subcategorie class='form-control' name='product-subcategorie'>";
+    $html .= "<option value=''>Select Sub-Categorie</option>";
+    foreach $subcategories as $subcat{
+    $html .="<option value=".echo (int)$subcat['id'].">".echo $subcat['name']."</option>" 	
+    }
+    
+    }
+    */
+    
+
+
+
+
+
+/*$all_subcategories = find_subcat('subcategories','3']);
+
+foreach ($all_subcategories as $subcat):
+
+	 $html .= "<option value=\"{$subcat['id']}\">";
+     $html .= "<?php echo $subcat['name'] ?></option>"; 
+        
+         
+ endforeach;
+
+ echo json_encode($html);
+}
+*/
+?>
+

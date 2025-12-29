@@ -1,0 +1,34 @@
+<?php
+require_once('includes/load.php');
+
+			$query = "SELECT * FROM detail_po WHERE products_id = ".$_POST["prid"]." AND purchaseorder_id = ".$_POST["rgtp"]."";
+			$result = $db->query($query);
+			//var_dump($db->num_rows($result) > 0);
+			$row = $db->fetch_assoc($result);
+
+			
+
+			$qty_total = $row['pendent'];
+			$qty_rg = $_POST["rg_qty"];
+			if ($qty_rg > $qty_total){
+
+				$return = true;
+
+			}
+			else{
+				
+				$return = $qty_total;
+			
+			}
+
+
+			
+
+			
+
+
+			//$return = $db->num_rows($result) > 0;
+			
+			echo json_encode($return);
+		
+?>
