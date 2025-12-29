@@ -36,5 +36,11 @@ RUN apt-get update && apt-get install -y \
 # Directorio de trabajo del servidor web
 WORKDIR /var/www/html
 
+# Copiar el código de la aplicación al DocumentRoot de Apache
+COPY public_html/ /var/www/html/
+
+# Exponer el puerto HTTP por defecto de Apache
+EXPOSE 80
+
 # Habilitar mod_rewrite por si la app lo usa
 RUN a2enmod rewrite
