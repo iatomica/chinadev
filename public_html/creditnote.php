@@ -1,20 +1,15 @@
 <?php
   $page_title = 'Generate Credit Note';
   require_once('includes/load.php');
-  // Checkin What level user has permission to view this page
    page_require_level(2);
 ?>
 <?php
-
 $all_clients = find_all('clients');
 $all_vendors = find_all('vendors');
 
 $smid = '0';
-
 ?>
-
 <?php
-
 if(isset($_POST['add_creditnotes'])){
 	
 		if($_POST['creditnoteto-cn'] === '1'){
@@ -33,10 +28,8 @@ if(isset($_POST['add_creditnotes'])){
     $credit = sum_credit_vendor($cn_vendor) + $cn_ammount;
     $debit = sum_debit_vendor($cn_vendor);
     $cn_balance = $debit - $credit;
-		//$date = '2021-04-21';
 
 		$date = make_date();
-		
 
 		$query  = "INSERT INTO currentaccount (";
 		$query .="bank,bank_account,debit,credit,vendors_id,clients_id,receivedgoods_id,currentaccount_type_id,balance,date,observation";
@@ -65,10 +58,7 @@ if(isset($_POST['add_creditnotes'])){
 		$cn_current_type = '3';
     $cn_balance = $debit - $credit;
 
-		//$date = '2021-04-21';
-
 		$date = make_date();
-		
 
 		$query  = "INSERT INTO currentaccount (";
 		$query .="bank,bank_account,debit,credit,vendors_id,clients_id,receivedgoods_id,currentaccount_type_id,balance,date,sales_id,observation";
@@ -76,16 +66,13 @@ if(isset($_POST['add_creditnotes'])){
 		$query .="'{$cn_bank}','{$cn_bank_account}','0','{$cn_ammount}',NULL,'{$cn_client}',NULL,'{$cn_current_type}','{$cn_balance}','{$date}',NULL,'{$cn_observation}'";
 		$query .=")";
 		if($db->query($query)){
-        
         redirect('creditnote.php', false);
         }
     	}
     }
-
 }
 
 ?>
-
 <?php include_once('layouts/header.php'); ?>
 <div class="row">
   <div class="col-md-12">
@@ -193,4 +180,3 @@ if(isset($_POST['add_creditnotes'])){
 </div>
 </div>
 <?php include_once('layouts/footer.php'); ?>
-

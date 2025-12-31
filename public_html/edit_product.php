@@ -1,55 +1,49 @@
 <?php
   $page_title = 'Update Product';
   require_once('includes/load.php');
-  // Checkin What level user has permission to view this page
    page_require_level(2);
 ?>
 <?php
-$product = find_by_id('products',(int)$_GET['id']);
-$catid = find_by_id_catsub('productscatsub',(int)$product['id']);
-$all_categories = find_all('categories');
-$all_photo = find_all('media');
-$all_moneys = find_all('moneys');
-$all_units = find_all('units');
-$all_vendors = find_all('vendors');
-$all_clients = find_all('clients');
-$all_packagings = find_all('packaging');
-$all_catsub = find_all('productscatsub');
-$all_prices = find_all('price_type');
-if(!$product){
-  $session->msg("d","Missing product id.");
-  redirect('product.php');
-}
+  $product = find_by_id('products',(int)$_GET['id']);
+  $catid = find_by_id_catsub('productscatsub',(int)$product['id']);
+  $all_categories = find_all('categories');
+  $all_photo = find_all('media');
+  $all_moneys = find_all('moneys');
+  $all_units = find_all('units');
+  $all_vendors = find_all('vendors');
+  $all_clients = find_all('clients');
+  $all_packagings = find_all('packaging');
+  $all_catsub = find_all('productscatsub');
+  $all_prices = find_all('price_type');
+
+  if(!$product){
+    $session->msg("d","Missing product id.");
+    redirect('product.php');
+  }
 ?>
 <?php
- if(isset($_POST['product'])){
-  global $db;
+  if(isset($_POST['product'])){
+    global $db;
     $req_fields = array('product-title-en','product-categorie');
     validate_fields($req_fields);
 
-  
-  $photo = new Media();
-  $photo->upload($_FILES['file_upload'],$product['id']);
-  if($photo->process_media($product['media_id'])){
+    $photo = new Media();
+    $photo->upload($_FILES['file_upload'],$product['id']);
 
-    $session->msg('s','Imagen subida al servidor.');
+    if($photo->process_media($product['media_id'])){
+      $session->msg('s','Imagen subida al servidor.');
+    } else{
+      $session->msg('d',join($photo->errors));
+    }
 
-  } else{
-    $session->msg('d',join($photo->errors));
-
-  }
-
-  $filecode = $photo->return_filename($_FILES['file_upload'],$product['id']);
+    $filecode = $photo->return_filename($_FILES['file_upload'],$product['id']);
 
     if ($_FILES['file_upload']["error"] == 4){
       $p_media = $product['media_id'];
       
     } else {
-
       $p_media = select_image_pr('media',$filecode);
-
     }
-
 
     $p_code  = remove_junk($db->escape($_POST['product-code']));
     $p_desc_en  = remove_junk($db->escape($_POST['product-title-en']));
@@ -77,283 +71,260 @@ if(!$product){
     $p_volume = remove_junk($db->escape(intvar($_POST['product-volume'])));
     $p_weight = remove_junk($db->escape(intvar($_POST['product-weight'])));
 
+    $query   = "UPDATE products SET";
+    $query  .=" desc_english ='{$p_desc_en}',price ='{$p_price}',media_id = '{$p_media}', moneys_id = '{$p_money}', desc_spanish = '{$p_desc_es}',";
+    $query  .=" desc_chinese = '{$p_desc_ch}' , desc_portuguese = '{$p_desc_pg}', color = '{$p_color}', material = '{$p_material}', size = '{$p_size}', cbm = '{$p_cbm}', openclose = '{$p_openclose}', uxb = '{$p_uxb}', inners = '{$p_inner}', units_id = '{$p_unit}', packaging_id = '{$p_packaging}', ean13 = '{$p_codebar_ean13}', dun14 ='{$p_codebar_dun14}', price_type_id = '{$p_price_type}',netweight = '{$p_netweight}',grossweight = '{$p_grossweight}', volume = '{$p_volume}', product_weight = '{$p_weight}' ";
+    $query  .=" WHERE id ='{$product['id']}'";
+    $result = $db->query($query);
+    
+    $cat = select_categorie_products($product['id']);
 
-
-       
-       $query   = "UPDATE products SET";
-       $query  .=" desc_english ='{$p_desc_en}',price ='{$p_price}',media_id = '{$p_media}', moneys_id = '{$p_money}', desc_spanish = '{$p_desc_es}',";
-       $query  .=" desc_chinese = '{$p_desc_ch}' , desc_portuguese = '{$p_desc_pg}', color = '{$p_color}', material = '{$p_material}', size = '{$p_size}', cbm = '{$p_cbm}', openclose = '{$p_openclose}', uxb = '{$p_uxb}', inners = '{$p_inner}', units_id = '{$p_unit}', packaging_id = '{$p_packaging}', ean13 = '{$p_codebar_ean13}', dun14 ='{$p_codebar_dun14}', price_type_id = '{$p_price_type}',netweight = '{$p_netweight}',grossweight = '{$p_grossweight}', volume = '{$p_volume}', product_weight = '{$p_weight}' ";
-       $query  .=" WHERE id ='{$product['id']}'";
-       $result = $db->query($query);
-       
-
-       $cat = select_categorie_products($product['id']);
-
-      if ($cat === true){
-
-         $query1  = "UPDATE productscatsub SET";
+    if ($cat === true){
+      $query1  = "UPDATE productscatsub SET";
       $query1 .= " categories_id = '{$p_cat}', subcategories_id = '{$p_subcat}'";
       $query1 .=" WHERE products_id = '{$product['id']}'";
       $result1 = $db->query($query1);
-
-       }
-        if($cat === false){
-          $query2 = "INSERT INTO productscatsub (";
-    $query2 .="products_id, categories_id, subcategories_id";
-    $query2 .=") VALUES (";
-    $query2 .="'{$product['id']}','{$p_cat}','{$p_subcat}'";
-    $query2 .=")";
-     $db->query($query2);
+    }
+    if ($cat === false){
+      $query2 = "INSERT INTO productscatsub (";
+      $query2 .="products_id, categories_id, subcategories_id";
+      $query2 .=") VALUES (";
+      $query2 .="'{$product['id']}','{$p_cat}','{$p_subcat}'";
+      $query2 .=")";
+      $db->query($query2);
     }
     
-
-      if($result || $result1 && $db->affected_rows() === 1 ){
-
-        $session->msg('s',"The product has been updated successfully. ");
-        redirect('product.php', false);
-      }else {
-        redirect('product.php', false);
-
+    if($result || $result1 && $db->affected_rows() === 1 ){
+      $session->msg('s',"The product has been updated successfully. ");
+      redirect('product.php', false);
+    } else {
+      redirect('product.php', false);
       }
-      
-              
-   
+  }
 
-
-
-
- 
-
-}
-
+  include_once('layouts/header.php'); 
 ?>
-
-<?php include_once('layouts/header.php'); ?>
 
 <div class="row">
   <div class="col-md-12">
     <?php echo display_msg($msg); ?>
   </div>
 </div>
-  <div class="row">
-    <div class="col-md-9">
-      <div class="panel panel-default">
-        <div class="panel-heading">
-          <strong>
-            <span class="glyphicon glyphicon-th"></span>
-            <span>Update Product</span>
-         </strong>
-        </div>
-          <div class="panel-body">
-            <div id="tabProduct">
-            <ul>
+
+<div class="row">
+  <div class="col-md-9">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <strong>
+          <span class="glyphicon glyphicon-th"></span>
+          <span>Update Product</span>
+        </strong>
+      </div>
+      <div class="panel-body">
+        <div id="tabProduct">
+          <ul>
             <li><a href="#CustomerSettings">Customer Settings</a></li>
-            <li id="PrInfo" name="PrInfo"><a href="#ProductInfo">Product Info</a></li>
-            
-        </ul>
-         <div class="col-md-12">
+            <li id="PrInfo" name="PrInfo"><a href="#ProductInfo">Product Info</a></li>  
+          </ul>
+          <div class="col-md-12">
           <form id="editproduct" method="post" action="edit_product.php?id=<?php echo (int)$product['id'] ?>" class="clearfix" enctype="multipart/form-data">
-            
-        <div id="ProductInfo">
-           <div class="form-group">
-              <label for="qty">Id</label>
-            <div class="row">
-            <div class="col-md-4">
-                   <div class="input-group">                    
-                     <span class="input-group-addon">
-                      <i class="glyphicon glyphicon-shopping-cart"></i>
-                     </span>
-                     <input type="text" readonly="readonly" class="form-control" name="product-id" id="product-id" value="<?php echo remove_junk($product['id']);?>" autocomplete="off">      
+            <div id="ProductInfo">
+              <div class="form-group">
+                <label for="qty">Id</label>
+                <div class="row">
+                  <div class="col-md-4">
+                    <div class="input-group">                    
+                      <span class="input-group-addon">
+                        <i class="glyphicon glyphicon-shopping-cart"></i>
+                      </span>
+                      <input type="text" readonly="readonly" class="form-control" name="product-id" id="product-id" value="<?php echo remove_junk($product['id']);?>" autocomplete="off">      
+                    </div>
                   </div>
-                 </div>
-               </div>
-              <label for="qty">Descriptions</label>
+                </div>
+                <label for="qty">Descriptions</label>
                 <div class="input-group">
                   <span class="input-group-addon">
-                   <i class="glyphicon glyphicon-th-large"></i>
+                    <i class="glyphicon glyphicon-th-large"></i>
                   </span>
                   <input type="text" class="form-control" name="product-title-en" placeholder="English" value="<?php echo remove_junk($product['desc_english']);?>" autocomplete="off" required>
-               </div>
-               <div class="input-group">
+                </div>
+                <div class="input-group">
                   <span class="input-group-addon">
-                   <i class="glyphicon glyphicon-th-large"></i>
+                    <i class="glyphicon glyphicon-th-large"></i>
                   </span>
                   <input type="text" class="form-control" name="product-title-es" placeholder="Spanish" value="<?php echo remove_junk($product['desc_spanish']);?>" autocomplete="off">
-               </div>
-               <div class="input-group">
+                </div>
+                <div class="input-group">
                   <span class="input-group-addon">
-                   <i class="glyphicon glyphicon-th-large"></i>
+                    <i class="glyphicon glyphicon-th-large"></i>
                   </span>
                   <input type="text" class="form-control" name="product-title-pg" placeholder="Portuguese" value="<?php echo remove_junk($product['desc_portuguese']);?>" autocomplete="off">
-               </div>
-               <div class="input-group">
+                </div>
+                <div class="input-group">
                   <span class="input-group-addon">
-                   <i class="glyphicon glyphicon-th-large"></i>
+                    <i class="glyphicon glyphicon-th-large"></i>
                   </span>
                   <input type="text" class="form-control" name="product-title-ch" placeholder="Chinese" value="<?php echo remove_junk($product['desc_chinese']);?>" autocomplete="off">
-               </div>
-             </div>
-               <div class="form-group">                
+                </div>
+              </div>
+              <div class="form-group">                
                 <div class="row">
                   <div class="col-md-6">
                     <div class="form-group">
                       <label for="qty">Category</label>
-                    <select id="product-categorie" class="form-control" name="product-categorie" required>
-                      <option value="">Select Category</option>
-                    <?php  foreach ($all_categories as $cat): ?>
-                      <option value="<?php echo (int)$cat['id'] ?>"<?php if($catid['categories_id'] === $cat['id']): echo "selected"; endif; ?>>
+                      <select id="product-categorie" class="form-control" name="product-categorie" required>
+                        <option value="">Select Category</option>
+                        <?php  foreach ($all_categories as $cat): ?>
+                        <option value="<?php echo (int)$cat['id'] ?>"<?php if($catid['categories_id'] === $cat['id']): echo "selected"; endif; ?>>
                         <?php echo $cat['name'] ?></option>
-                    <?php endforeach; ?>
-                    </select>
-                  </div>
-                </div>               
-              <div id="productsubcategorie" class="col-md-5"> </div>               
-             </div>
-           </div>
+                        <?php endforeach; ?>
+                      </select>
+                    </div>
+                  </div>               
+                  <div id="productsubcategorie" class="col-md-5"> </div>               
+                </div>
+              </div>
               <div class="form-group">                
-            <div class="row"> 
-             <div class="col-md-2">
-              
-                <img class="img-thumbnail1" name="img_products" id="img_products" src="uploads/products/no-image.jpg">
-            </div>
-        </div>
-   </div>
-            <div class="form-group">                
+                <div class="row"> 
+                  <div class="col-md-2">
+                    <img class="img-thumbnail1" name="img_products" id="img_products" src="uploads/products/no-image.jpg">
+                  </div>
+                </div>
+              </div>
+              <div class="form-group">
                 <div class="row">                  
                   <div class="col-md-6">
                     <div class="form-group">
-
-                       
-                    <input type="file" name="file_upload" id="file_upload" multiple="multiple" class="btn-default">Choose your image</input>                
-                 </div>
-                </div>
-              </div>
-            </div>
-
-          <div class="input-group">
-          <input type="hidden" name="p-id" id="p-id" value="<?php echo remove_junk($product['id']);?>"/>
-            <input type="hidden" name="subcategorye" id="subcategorye" value="<?php echo remove_junk($catid['subcategories_id']);?>">
-          </div>
-                <div class="form-group">
-               <div class="row">
-                 <div class="col-md-4">
-                    <div class="form-group">
-                    <label for="qty">Currency</label>
-                    <select class="form-control" name="product-money" required>
-                      <option value="">Select Money Type</option>
-                      <?php  foreach ($all_moneys as $money): ?>
-                      <option value="<?php echo (int)$money['id'];?>" <?php if($product['moneys_id'] === $money['id']): echo "selected"; endif; ?> >
-                      <?php echo $money['moneytype'] ?></option>
-                      <?php endforeach; ?>
-                    </select>
+                      <input type="file" name="file_upload" id="file_upload" multiple="multiple" class="btn-default">Choose your image</input>                
+                    </div>
                   </div>
                 </div>
-            <div class="col-md-4">
-              <div class="form-group">
-                <label for="qty">Price</label>
-                <div class="input-group">
-                  <span class="input-group-addon">
-                  <i class="glyphicon glyphicon-usd"></i>
-                  </span>
-                  <input type="number" class="form-control" name="product-price" step="any" placeholder="Insert Price" value="<?php echo remove_junk($product['price']);?>" autocomplete="off" required>    
-                </div>
               </div>
-            </div>
-            <div class="col-md-4">
+              <div class="input-group">
+                <input type="hidden" name="p-id" id="p-id" value="<?php echo remove_junk($product['id']);?>"/>
+                <input type="hidden" name="subcategorye" id="subcategorye" value="<?php echo remove_junk($catid['subcategories_id']);?>">
+              </div>
+              <div class="form-group">
+                <div class="row">
+                  <div class="col-md-4">
                     <div class="form-group">
-                    <label for="qty">Price Type</label>
-                    <select class="form-control" name="product-price-type" required>
-                      <option value="">Select Price Type</option>
-                      <?php  foreach ($all_prices as $price): ?>
-                      <option value="<?php echo (int)$price['id'];?>" <?php if($product['price_type_id'] === $price['id']): echo "selected"; endif; ?> >
-                      <?php echo $price['price_type'] ?></option>
-                      <?php endforeach; ?>
-                    </select>
+                      <label for="qty">Currency</label>
+                      <select class="form-control" name="product-money" required>
+                        <option value="">Select Money Type</option>
+                        <?php  foreach ($all_moneys as $money): ?>
+                        <option value="<?php echo (int)$money['id'];?>" <?php if($product['moneys_id'] === $money['id']): echo "selected"; endif; ?> >
+                        <?php echo $money['moneytype'] ?></option>
+                        <?php endforeach; ?>
+                      </select>
+                    </div>
+                  </div>
+                  <div class="col-md-4">
+                    <div class="form-group">
+                      <label for="qty">Price</label>
+                      <div class="input-group">
+                        <span class="input-group-addon">
+                          <i class="glyphicon glyphicon-usd"></i>
+                        </span>
+                        <input type="number" class="form-control" name="product-price" step="any" placeholder="Insert Price" value="<?php echo remove_junk($product['price']);?>" autocomplete="off" required>    
+                      </div>
+                    </div>
+                  </div>
+                  <div class="col-md-4">
+                    <div class="form-group">
+                      <label for="qty">Price Type</label>
+                      <select class="form-control" name="product-price-type" required>
+                        <option value="">Select Price Type</option>
+                        <?php  foreach ($all_prices as $price): ?>
+                        <option value="<?php echo (int)$price['id'];?>" <?php if($product['price_type_id'] === $price['id']): echo "selected"; endif; ?> >
+                        <?php echo $price['price_type'] ?></option>
+                        <?php endforeach; ?>
+                      </select>
+                    </div>
                   </div>
                 </div>
-                </div>
-               </div>
-              <div class="form-group">
-             <div class="row">
-            <div class="col-md-4">
-          <div class="form-group">
-            <label for="qty">Code bars</label>
-            <div class="input-group">
-              <label for="qty">EAN13</label>
-             <input type="number" class="form-control" name="product-ean13" placeholder="Insert Codebar EAN13" value="<?php echo remove_junk($product['ean13']);?>" autocomplete="off" required>
-           </div>
-          </div>
-        </div>
+              </div>
+            <div class="form-group">
+            <div class="row">
           <div class="col-md-4">
         <div class="form-group">
-          <label for="qty">         </label>
-          <label for="qty"></label>
-          <div class="input-group">  
-          <label for="qty">DUN14</label>                   
-            <input type="number" class="form-control" name="product-dun14" placeholder="Insert Codebar DUN14" value="<?php echo remove_junk($product['dun14']);?>" autocomplete="off" required>
+          <label for="qty">Code bars</label>
+          <div class="input-group">
+            <label for="qty">EAN13</label>
+            <input type="number" class="form-control" name="product-ean13" placeholder="Insert Codebar EAN13" value="<?php echo remove_junk($product['ean13']);?>" autocomplete="off" required>
           </div>
         </div>
       </div>
-    </div>
-         </div>  
-
-       <div class="form-group">
-        <div class="row">
-        <div class="col-md-3">
-        <div class="form-group">
-        <label for="qty">CBM</label>
-        <div class="input-group">
-         <input type="text" class="form-control" name="product-cbm" placeholder="Insert CBM" value="<?php echo remove_junk($product['cbm']);?>" autocomplete="off" required>
-         <span class="input-group-addon">M3</span>
-       </div>
-     </div>
+        <div class="col-md-4">
+      <div class="form-group">
+        <label for="qty">         </label>
+        <label for="qty"></label>
+        <div class="input-group">  
+        <label for="qty">DUN14</label>                   
+          <input type="number" class="form-control" name="product-dun14" placeholder="Insert Codebar DUN14" value="<?php echo remove_junk($product['dun14']);?>" autocomplete="off" required>
         </div>
-          <div class="col-md-3">
-         <div class="form-group">
-      <label for="qty">Product size</label>
-      <div class="input-group">
-       <input type="text" class="form-control" name="product-size" placeholder="Insert Product size" value="<?php echo remove_junk($product['size']);?>" autocomplete="off" required>
-     </div>
-   </div>
-    </div>
-     <div class="col-md-3">
-     <div class="form-group">
-    <label for="qty">Material</label>
-    <div class="input-group">
-     <input type="text" class="form-control" name="product-material" placeholder="Insert Material" value="<?php echo remove_junk($product['material']);?>" autocomplete="off" required>
-     </div>
-     </div>
-    </div>
-    <div class="col-md-3">
-        <div class="form-group">
-        <label for="qty">Product weight</label>
-        <div class="input-group">
-         <input type="number" step="any" class="form-control" name="product-weight" placeholder="Insert Product Weight" value="<?php echo remove_junk($product['product_weight']);?>" autocomplete="off" required>
-         <span class="input-group-addon">GR</span>
-       </div>
-     </div>
-        </div>
-    <div class="col-md-3">
-    <div class="form-group">
-    <label for="qty">Color</label>
-    <div class="input-group">
-     <input type="text" class="form-control" name="product-color" placeholder="Insert Color" value="<?php echo remove_junk($product['color']);?>" autocomplete="off" required>
       </div>
     </div>
-    </div>
+  </div>
+        </div>  
 
-        </div>
-      </div> 
-    <div class="form-group">
-    <div class="row">
-     <div class="col-md-3">
-    <div class="form-group">
-      <label for="qty">Uxb</label>
+      <div class="form-group">
+      <div class="row">
+      <div class="col-md-3">
+      <div class="form-group">
+      <label for="qty">CBM</label>
       <div class="input-group">
-       <input type="text" class="form-control" name="product-uxb" placeholder="Insert Uxb" value="<?php echo remove_junk($product['uxb']);?>" autocomplete="off" required>                  
-     </div>
-   </div>
- </div>
+        <input type="text" class="form-control" name="product-cbm" placeholder="Insert CBM" value="<?php echo remove_junk($product['cbm']);?>" autocomplete="off" required>
+        <span class="input-group-addon">M3</span>
+      </div>
+    </div>
+      </div>
+        <div class="col-md-3">
+        <div class="form-group">
+    <label for="qty">Product size</label>
+    <div class="input-group">
+      <input type="text" class="form-control" name="product-size" placeholder="Insert Product size" value="<?php echo remove_junk($product['size']);?>" autocomplete="off" required>
+    </div>
+  </div>
+  </div>
+    <div class="col-md-3">
+    <div class="form-group">
+  <label for="qty">Material</label>
+  <div class="input-group">
+    <input type="text" class="form-control" name="product-material" placeholder="Insert Material" value="<?php echo remove_junk($product['material']);?>" autocomplete="off" required>
+    </div>
+    </div>
+  </div>
+  <div class="col-md-3">
+      <div class="form-group">
+      <label for="qty">Product weight</label>
+      <div class="input-group">
+        <input type="number" step="any" class="form-control" name="product-weight" placeholder="Insert Product Weight" value="<?php echo remove_junk($product['product_weight']);?>" autocomplete="off" required>
+        <span class="input-group-addon">GR</span>
+      </div>
+    </div>
+      </div>
+  <div class="col-md-3">
+  <div class="form-group">
+  <label for="qty">Color</label>
+  <div class="input-group">
+    <input type="text" class="form-control" name="product-color" placeholder="Insert Color" value="<?php echo remove_junk($product['color']);?>" autocomplete="off" required>
+    </div>
+  </div>
+  </div>
+
+      </div>
+    </div> 
+  <div class="form-group">
+  <div class="row">
+    <div class="col-md-3">
+  <div class="form-group">
+    <label for="qty">Uxb</label>
+    <div class="input-group">
+      <input type="text" class="form-control" name="product-uxb" placeholder="Insert Uxb" value="<?php echo remove_junk($product['uxb']);?>" autocomplete="off" required>                  
+    </div>
+  </div>
+</div>
+
  <div class="col-md-3">
   <div class="form-group">
     <label for="qty">Inner</label>
@@ -362,6 +333,7 @@ if(!$product){
    </div>
  </div>
 </div>
+
 <div class="col-md-3">
   <div class="form-group">
     <label for="qty">Unit</label>
@@ -374,7 +346,7 @@ if(!$product){
       </select>
     </div>
   </div>
-    
+
   <div class="col-md-3">
     <div class="form-group">
       <label for="qty">Packaging</label>
@@ -425,20 +397,20 @@ if(!$product){
       
  </form>
 </div>
+
 <div id="CustomerSettings">
-             <div class="form-group">
-             <label for="qty23">Customer Alias</label>             
-             <div><button type="button" name="addclientcode" id="addclientcode" class="btn btn-success btn-xs">Add Customer alias</button></div>
-              
-            <div class="table-responsive">
-              <table class="table table-bordered table-striped" name="clientcode" id="clientcode">
-              <thead>
-                <tr>
-                  <th>Customer Alias</th>
-                  <th>Customer</th>
-                  <th>Update</th>
-                  <th>Delete</th>
-                </tr>
+    <div class="form-group">
+      <label for="qty23">Customer Alias</label>             
+      <div><button type="button" name="addclientcode" id="addclientcode" class="btn btn-success btn-xs">Add Customer alias</button></div>
+      <div class="table-responsive">
+          <table class="table table-bordered table-striped" name="clientcode" id="clientcode">
+            <thead>
+              <tr>
+                <th>Customer Alias</th>
+                <th>Customer</th>
+                <th>Update</th>
+                <th>Delete</th>
+              </tr>
             </thead>
             <tr>
                 <th></th>
@@ -446,9 +418,10 @@ if(!$product){
                 <th></th>
                 <th></th>
             </tr>
-            </table>
-          </div> 
-              </div>
+          </table>
+      </div> 
+    </div>
+</div>
 </div>
 </div>
 </div>
@@ -477,14 +450,12 @@ if(!$product){
                 <option value="<?php echo (int)$cli['id'] ?>">           
                 <?php echo $cli['name'] ?></option>
                 <?php endforeach; ?>
-
                 </select>              
           </div>      
           <div class="form-group">
             <label for="lastname" class="control-label">Id Product</label>              
             <input type="text" readonly="readonly" class="form-control"  id="clientcodeProductid" name="clientcodeProductid" placeholder="Product id" value ="<?php echo remove_junk($product['id']);?>">             
           </div>   
-         
         <div class="modal-footer">
           <input type="hidden" name="clientcodeId" id="clientcodeId"/>
           <input type="hidden" name="action" id="action" value="" />
@@ -492,8 +463,7 @@ if(!$product){
         </div>
       </div>
    </form>
+  </div>
 </div>
-</div>
-
 
 <?php include_once('layouts/footer.php'); ?>

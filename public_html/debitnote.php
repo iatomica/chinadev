@@ -1,7 +1,6 @@
 <?php
   $page_title = 'Generate Debit Note';
   require_once('includes/load.php');
-  // Checkin What level user has permission to view this page
    page_require_level(2);
 ?>
 <?php
@@ -12,7 +11,6 @@ $all_vendors = find_all('vendors');
 $smid = '0';
 
 ?>
-
 <?php
 
 if(isset($_POST['add_debitnotes'])){
@@ -33,10 +31,8 @@ if(isset($_POST['add_debitnotes'])){
     $credit = sum_credit_vendor($dn_vendor);
     $debit = sum_debit_vendor($dn_vendor) + $dn_ammount;
     $dn_balance = $debit - $credit;
-		//$date = '2021-04-21';
 
 		$date = make_date();
-		
 
 		$query  = "INSERT INTO currentaccount (";
 		$query .="bank,bank_account,debit,credit,vendors_id,clients_id,receivedgoods_id,currentaccount_type_id,balance,date,observation";
@@ -67,11 +63,8 @@ if(isset($_POST['add_debitnotes'])){
     $debit = sum_debit_client($dn_client) + $dn_ammount;
     $balance = $debit - $credit;
 
-		//$date = '2021-04-21';
-
 		$date = make_date();
 		
-
 		$query  = "INSERT INTO currentaccount (";
 		$query .="bank,bank_account,debit,credit,vendors_id,clients_id,receivedgoods_id,currentaccount_type_id,balance,date,sales_id,observation";
 		$query .=") VALUES (";
@@ -87,7 +80,6 @@ if(isset($_POST['add_debitnotes'])){
 }
 
 ?>
-
 <?php include_once('layouts/header.php'); ?>
 <div class="row">
   <div class="col-md-12">
@@ -196,4 +188,3 @@ if(isset($_POST['add_debitnotes'])){
 </div>
 </div>
 <?php include_once('layouts/footer.php'); ?>
-
