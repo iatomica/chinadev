@@ -74,6 +74,138 @@ function suggetion() {
     });
   }
 
+// Prevent double-submit on all forms (full page POST and AJAX).
+// - First submit locks the form and disables submit controls.
+// - If submission is prevented (e.g., AJAX), it unlocks when jQuery AJAX finishes.
+(function () {
+  'use strict';
+
+  var FORM_LOCK_ATTR = 'data-submit-locked';
+  var CONTROL_MANAGED_ATTR = 'data-submit-lock-managed';
+  var CONTROL_PREV_DISABLED_ATTR = 'data-submit-lock-prev-disabled';
+
+  function getSubmitControls(form) {
+    if (!form || !form.querySelectorAll) return [];
+    return Array.prototype.slice.call(
+      form.querySelectorAll(
+        'button[type="submit"], input[type="submit"], input[type="image"], button:not([type])'
+      )
+    );
+  }
+
+  function lockForm(form) {
+    if (!form || form.nodeName !== 'FORM') return false;
+    var alreadyLocked = form.getAttribute(FORM_LOCK_ATTR) === '1';
+    if (!alreadyLocked) form.setAttribute(FORM_LOCK_ATTR, '1');
+
+    var controls = getSubmitControls(form);
+    for (var i = 0; i < controls.length; i++) {
+      var control = controls[i];
+      if (!control.getAttribute(CONTROL_MANAGED_ATTR)) {
+        control.setAttribute(CONTROL_MANAGED_ATTR, '1');
+        control.setAttribute(CONTROL_PREV_DISABLED_ATTR, control.disabled ? '1' : '0');
+      }
+      control.disabled = true;
+    }
+
+    return !alreadyLocked;
+  }
+
+  function unlockForm(form) {
+    if (!form || form.nodeName !== 'FORM') return;
+    form.removeAttribute(FORM_LOCK_ATTR);
+
+    var controls = getSubmitControls(form);
+    for (var i = 0; i < controls.length; i++) {
+      var control = controls[i];
+      if (control.getAttribute(CONTROL_MANAGED_ATTR) !== '1') continue;
+      var prevDisabled = control.getAttribute(CONTROL_PREV_DISABLED_ATTR);
+      if (prevDisabled === '0') control.disabled = false;
+      control.removeAttribute(CONTROL_MANAGED_ATTR);
+      control.removeAttribute(CONTROL_PREV_DISABLED_ATTR);
+    }
+  }
+
+  document.addEventListener(
+    'submit',
+    function (event) {
+      var form = event.target;
+      if (!form || form.nodeName !== 'FORM') return;
+
+      if (form.getAttribute(FORM_LOCK_ATTR) === '1') {
+        event.preventDefault();
+        if (event.stopImmediatePropagation) event.stopImmediatePropagation();
+        return;
+      }
+
+      // Mark locked immediately to block a second rapid submit.
+      // Do not disable submit controls yet; some PHP handlers rely on the clicked submit
+      // button name being present in POST (e.g., isset($_POST['add_sales'])).
+      form.setAttribute(FORM_LOCK_ATTR, '1');
+
+      // If someone prevented the submit (AJAX or validation), don't keep the form locked forever.
+      // We wait a tick so other submit handlers can call preventDefault().
+      setTimeout(function () {
+        // Disable submit controls now (after the browser has captured the submitter).
+        lockForm(form);
+
+        if (!event.defaultPrevented) return;
+
+        // If the submit was prevented and there are active jQuery AJAX requests,
+        // unlock when AJAX finishes. Otherwise, unlock immediately.
+        try {
+          if (window.jQuery && typeof window.jQuery.active === 'number') {
+            // Give a tiny grace period in case AJAX is started slightly after submit handlers run.
+            var active = window.jQuery.active;
+            if (active === 0) {
+              setTimeout(function () {
+                if (window.jQuery.active === 0) unlockForm(form);
+              }, 50);
+              return;
+            }
+
+            if (active > 0) {
+              var done = false;
+              var timer = setTimeout(function () {
+                if (done) return;
+                done = true;
+                unlockForm(form);
+              }, 30000);
+
+              window.jQuery(document).one('ajaxStop', function () {
+                if (done) return;
+                done = true;
+                clearTimeout(timer);
+                unlockForm(form);
+              });
+              return;
+            }
+          }
+        } catch (e) {
+          // Fall through to unlock below.
+        }
+
+        unlockForm(form);
+      }, 0);
+    },
+    true
+  );
+
+  // Cover programmatic submissions: form.submit() bypasses the submit event.
+  try {
+    if (!HTMLFormElement.prototype.__submitLockPatched) {
+      HTMLFormElement.prototype.__submitLockPatched = true;
+      var nativeSubmit = HTMLFormElement.prototype.submit;
+      HTMLFormElement.prototype.submit = function () {
+        lockForm(this);
+        return nativeSubmit.apply(this, arguments);
+      };
+    }
+  } catch (e) {
+    // Ignore environments where patching isn't allowed.
+  }
+})();
+
  
 
 
